@@ -1,0 +1,32 @@
+typedef long long LL;
+
+class Solution {
+public:
+    long long findKthSmallest(vector<int>& coins, int k) {
+        int n=coins.size();
+        function<bool(LL)> check = [&](LL x) {
+            LL cnt=0;
+            for(int mask=1;mask<1<<n;mask++){
+                int c=__builtin_popcount(mask);
+                int sign=c&1?1:-1;
+                LL m=0;
+                for(int i=0;i<n;i++){
+                    if(mask>>i&1)m=m==0?coins[i]:lcm(m,coins[i]);
+                    if(m>x)break;
+                }
+                cnt=cnt+sign*(x/m);
+            }
+            return cnt>=k;
+        };
+        LL l = 1, r = 1e15;
+        while(l < r) {
+            LL mid = l + r >> 1;
+            if(check(mid)) {
+                r = mid;
+            }else {
+                l = mid + 1;
+            }
+        }
+        return r;
+    }
+};
